@@ -2,11 +2,13 @@ package com.whatsapp.Whatsappclone.Controllers;
 
 import com.whatsapp.Whatsappclone.Dto.AuthenticationResponse;
 import com.whatsapp.Whatsappclone.Dto.LoginRequest;
+import com.whatsapp.Whatsappclone.Dto.RegistrationRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Repositories.UserRepository;
 import com.whatsapp.Whatsappclone.Security.JWT.TokenProvider;
 import com.whatsapp.Whatsappclone.Services.CustomUserService;
+import jakarta.servlet.Registration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +31,7 @@ public class AuthenticationController {
     private final CustomUserService customUserService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody AppUser userRequest) {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest userRequest) {
         AppUser isUser = userRepository.findByEmail(userRequest.getEmail());
 
         if (isUser != null)
@@ -48,7 +50,7 @@ public class AuthenticationController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
 
         AuthenticationResponse response = new AuthenticationResponse(jwt, true);
 
@@ -63,7 +65,7 @@ public class AuthenticationController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
 
         AuthenticationResponse response = new AuthenticationResponse(jwt, true);
 

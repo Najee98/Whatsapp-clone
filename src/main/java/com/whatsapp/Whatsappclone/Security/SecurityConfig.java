@@ -30,23 +30,23 @@ public class SecurityConfig {
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtTokenValidator(), BasicAuthenticationFilter.class)
                 .csrf().disable()
-                .cors().configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration cfg = new CorsConfiguration();
-                        cfg.setAllowedOrigins(Arrays.asList(
-                                "http://localhost:8080/"
-                        ));
-                        cfg.setAllowedMethods(Collections.singletonList("*"));
-                        cfg.setAllowCredentials(true);
-                        cfg.setAllowedHeaders(Collections.singletonList("*"));
-                        cfg.setExposedHeaders(Arrays.asList("Authorization"));
-                        cfg.setMaxAge(3600L);
-
-                        return cfg;
-                    }
-                })
-                .and()
+//                .cors().configurationSource(new CorsConfigurationSource() {
+//                    @Override
+//                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+//                        CorsConfiguration cfg = new CorsConfiguration();
+//                        cfg.setAllowedOrigins(Arrays.asList(
+//                                "http://localhost:8080/"
+//                        ));
+//                        cfg.setAllowedMethods(Collections.singletonList("*"));
+//                        cfg.setAllowCredentials(true);
+//                        cfg.setAllowedHeaders(Collections.singletonList("*"));
+//                        cfg.setExposedHeaders(Arrays.asList("Authorization"));
+//                        cfg.setMaxAge(3600L);
+//
+//                        return cfg;
+//                    }
+//                })
+//                .and()
                 .formLogin()
                 .and()
                 .httpBasic();
