@@ -76,8 +76,9 @@ public class ChatServiceImpl implements ChatService {
             AppUser groupUser = userService.findUserById(userId);
             group.getUsers().add(groupUser);
         }
+        group.getUsers().add(requestUser);
 
-        return group;
+        return chatRepository.save(group);
     }
 
     @Override

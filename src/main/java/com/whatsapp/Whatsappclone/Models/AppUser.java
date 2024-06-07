@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class AppUser {
     private String fullName;
     private String email;
     private String profilePicture;
+    @JsonIgnore
     private String password;
 
     @Override

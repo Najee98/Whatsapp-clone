@@ -12,8 +12,11 @@ import java.util.List;
 @Repository
 public interface ChatRepository extends JpaRepository<Chat, Integer> {
 
-    @Query("select c from Chat c join c.users u where u.id = :userId")
+    @Query("select distinct c from Chat c join c.users u " +
+            "left join c.admins a where u.id = :userId " +
+            "or a.id = :userId")
     public List<Chat> findChatByUserId(@Param("userId") Integer userId);
+
 
     @Query("select c from Chat c where c.isGroup = false " +
             "and :requestUser member of c.users " +

@@ -50,7 +50,7 @@ public class AuthenticationController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.generateToken(authentication);
+        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
 
         AuthenticationResponse response = new AuthenticationResponse(jwt, true);
 
@@ -65,7 +65,7 @@ public class AuthenticationController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.generateToken(authentication);
+        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
 
         AuthenticationResponse response = new AuthenticationResponse(jwt, true);
 
