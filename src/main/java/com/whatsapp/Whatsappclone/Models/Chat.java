@@ -7,9 +7,7 @@ import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -37,6 +35,6 @@ public class Chat {
     @ManyToMany
     private List<AppUser> admins = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 }
