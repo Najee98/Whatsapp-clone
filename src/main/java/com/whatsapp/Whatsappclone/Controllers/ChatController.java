@@ -54,9 +54,9 @@ public class ChatController {
         return new ResponseEntity<>(chat, HttpStatus.OK);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/by-user")
     public ResponseEntity<List<Chat>> findChatsByUser(
-            @PathVariable Integer userId,
+            @RequestParam Integer userId,
             @RequestHeader("Authorization") String jwt
     ){
         List<Chat> chats = chatService.findAllChatsByUserId(userId);

@@ -29,12 +29,18 @@ public class ChatServiceImpl implements ChatService {
             return isChatExist;
 
         Chat chat = new Chat();
+        chat.setName(
+                userService.findUserById(targetUserId).getFullName()
+        );
+        chat.setImage(
+                userService.findUserById(targetUserId).getProfilePicture()
+        );
         chat.setCreatedBy(requestUser);
         chat.getUsers().add(requestUser);
         chat.getUsers().add(targetUser);
         chat.setGroup(false);
 
-        return chat;
+        return chatRepository.save(chat);
     }
 
     @Override
