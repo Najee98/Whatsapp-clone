@@ -32,7 +32,7 @@ public class Chat {
     private AppUser createdBy;
 
     @ManyToMany
-    private Set<AppUser> users = new HashSet<>();
+    private List<AppUser> users = new ArrayList<>();
 
     @ManyToMany
     private Set<AppUser> admins = new HashSet<>();

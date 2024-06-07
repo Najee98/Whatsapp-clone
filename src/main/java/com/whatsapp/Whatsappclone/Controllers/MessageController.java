@@ -1,6 +1,7 @@
 package com.whatsapp.Whatsappclone.Controllers;
 
 import com.whatsapp.Whatsappclone.Dto.AuthenticationResponse;
+import com.whatsapp.Whatsappclone.Dto.ChatMessagesDto;
 import com.whatsapp.Whatsappclone.Dto.SendMessageRequest;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Models.Message;
@@ -33,12 +34,12 @@ public class MessageController {
     }
 
     @GetMapping("/chat/{chatId}")
-    public ResponseEntity<List<Message>> findChatMessages(
+    public ResponseEntity<List<ChatMessagesDto>> findChatMessages(
             @PathVariable Integer chatId,
             @RequestHeader("Authorization") String jwt
     ){
         AppUser user = userService.findUserProfile(jwt);
-        List<Message> messages = messageService.getChatMessages(chatId, user);
+        List<ChatMessagesDto> messages = messageService.getChatMessages(chatId, user);
 
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }

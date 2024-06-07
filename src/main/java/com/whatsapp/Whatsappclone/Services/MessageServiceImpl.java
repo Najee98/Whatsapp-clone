@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.whatsapp.Whatsappclone.Dto.ChatMessagesDto;
 import com.whatsapp.Whatsappclone.Dto.SendMessageRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.MessageException;
@@ -42,14 +43,18 @@ public class MessageServiceImpl implements MessageService{
     }
 
     @Override
-    public List<Message> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
+    public List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
 
         Chat chat = chatRepository.findById(chatId).get();
 
         if (!chat.getUsers().contains(requestUser))
             throw new UserException("User is not in this chat.");
 
-        List<Message> messages = messageRepository.findByChatId(chatId);
+        AppUser user1 = chat.getUsers().get(0);
+        AppUser user2 = chat.getUsers().get(1);
+//        List<Message> messages = messageRepository.findByChatId(chatId);
+
+        List<ChatMessagesDto> messages = messageRepository.findChatMessages(chatId, user1, user2);
 
         return messages;
     }
