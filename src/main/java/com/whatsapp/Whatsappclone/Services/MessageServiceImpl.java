@@ -79,28 +79,15 @@ public class MessageServiceImpl implements MessageService{
 //    }
 
     @Override
-    public Message sendMessage(SendMessageRequest request, AppUser user) throws UserException, ChatException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String requestUserName = authentication.getName();
-
-//        AppUser requestUser = userService.findUserByUsername(requestUserName);
-
-
+    public Message sendMessage(SendMessageRequest request, AppUser fromUser) throws UserException, ChatException {
 
         Chat chat = chatService.findChatById(request.getChatId());
-//        if (chat == null) {
-//            chat = new Chat();
-//            chat.setGroup(false);
-//            chat.setCreatedBy(user);
-//            chat.getUsers().add(user);
-//            chat.getUsers().add(user);
-//            chat = chatRepository.save(chat);
-//        }
 
-        List<AppUser> receivers = userService.findChatTargetUser(chat.getId(), user);
+        List<AppUser> receivers = userService.findChatTargetUser(chat.getId(), fromUser);
 
         for (int i = 0; i < receivers.size(); i++){
             Message message = new Message();
+            message.setFromUser(fromUser);
             message.setChat(chat);
             message.setUser(receivers.get(i));
             message.setContent(request.getContent());

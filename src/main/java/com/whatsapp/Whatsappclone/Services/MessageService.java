@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface MessageService {
 
-    Message sendMessage(SendMessageRequest request, AppUser user) throws UserException, ChatException;
+    Message sendMessage(SendMessageRequest request, AppUser fromUser) throws UserException, ChatException;
     
     List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException;
 

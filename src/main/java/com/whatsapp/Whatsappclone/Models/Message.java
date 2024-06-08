@@ -25,6 +25,11 @@ public class Message {
 
     @ManyToOne
     @JsonIgnore
+    @JoinColumn(name = "from_user") // Add JoinColumn annotation
+    private AppUser fromUser;
+
+    @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id") // Add JoinColumn annotation
     private AppUser user;
 
