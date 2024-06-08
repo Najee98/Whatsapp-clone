@@ -10,9 +10,8 @@ import com.whatsapp.Whatsappclone.Repositories.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -69,9 +68,14 @@ public class ChatServiceImpl implements ChatService {
             boolean isGroup = (boolean) chatData[3];
 
             String lastMessageContent = messageService.getLastMessageContentForChat(chatId, user);
-            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent);
+            LocalDateTime lastMessageTimeStamp = messageService.getLastMessageTimeStampForChat(chatId, user);
+            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp);
             chats.add(dto);
         }
+
+        // Sort chats list based on last message timestamp in descending order
+        Collections.sort(chats, Comparator.comparing(ChatsIndexDto::getLastMessageTimeStamp).reversed());
+
 
         return chats;
     }

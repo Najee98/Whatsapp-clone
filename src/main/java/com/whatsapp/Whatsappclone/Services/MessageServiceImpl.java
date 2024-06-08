@@ -156,4 +156,14 @@ public class MessageServiceImpl implements MessageService{
             return ""; // or any default value you want to use
         }
     }
+
+    @Override
+    public LocalDateTime getLastMessageTimeStampForChat(Integer chatId, AppUser user) {
+        List<Message> messages = messageRepository.findTopByChatIdOrderByTimestampDesc(chatId);
+        if (!messages.isEmpty()) {
+            return messages.get(0).getTimestamp();
+        } else {
+            return LocalDateTime.MIN;
+        }
+    }
 }

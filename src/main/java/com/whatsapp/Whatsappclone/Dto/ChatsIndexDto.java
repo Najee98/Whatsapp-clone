@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -16,5 +17,5 @@ public class ChatsIndexDto implements Serializable {
     String image;
     boolean group;
     String lastMessage;
-
+    LocalDateTime lastMessageTimeStamp;
 }
