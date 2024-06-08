@@ -12,11 +12,11 @@ public interface UserService {
 
     AppUser findUserById(Integer id);
 
+    List<AppUser> searchUser(String searchQuery);
+
     AppUser findUserProfile(String jwt);
 
     AppUser updateUser(Integer id, UpdateUserRequest request) throws UserException;
-
-    List<AppUser> searchUser(String searchQuery);
 
     AppUser findUserByUsername(String username);
 }

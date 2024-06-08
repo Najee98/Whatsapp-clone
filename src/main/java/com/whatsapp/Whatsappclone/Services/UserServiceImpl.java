@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +25,19 @@ public class UserServiceImpl implements UserService{
                 .orElseThrow(() -> new UserException("User with id: " + id + " not found"));
 
         return user;
+    }
+
+    @Override
+    public List<AppUser> searchUser(String searchQuery) {
+
+        List<AppUser> users = new ArrayList<>();
+
+        if (searchQuery == null)
+            users = userRepository.findAll();
+        else
+            users = userRepository.searchUser(searchQuery);
+
+        return users;
     }
 
     @Override
@@ -52,13 +66,6 @@ public class UserServiceImpl implements UserService{
             user.setProfilePicture(request.getProfilePicture());
 
         return userRepository.save(user);
-    }
-
-    @Override
-    public List<AppUser> searchUser(String searchQuery) {
-        List<AppUser> users = userRepository.searchUser(searchQuery);
-
-        return users;
     }
 
     @Override

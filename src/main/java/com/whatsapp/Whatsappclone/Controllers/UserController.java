@@ -18,19 +18,19 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping()
+    public ResponseEntity<List<AppUser>> searchUsers(@RequestParam String searchQuery){
+        List<AppUser> users = userService.searchUser(searchQuery);
+
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<AppUser> getUserProfile(@RequestHeader("Authorization") String token){
 
         AppUser user = userService.findUserProfile(token);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @GetMapping("/{searchQuery}")
-    public ResponseEntity<List<AppUser>> searchUsers(@PathVariable String searchQuery){
-        List<AppUser> users = userService.searchUser(searchQuery);
-
-        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @PutMapping("/update")
