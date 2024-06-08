@@ -2,6 +2,7 @@ package com.whatsapp.Whatsappclone.Repositories;
 
 import com.whatsapp.Whatsappclone.Dto.ChatMessagesDto;
 import com.whatsapp.Whatsappclone.Models.AppUser;
+import com.whatsapp.Whatsappclone.Models.Chat;
 import com.whatsapp.Whatsappclone.Models.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +35,11 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     List<ChatMessagesDto> findChatMessages(@Param("chatId") Integer chatId,
                                            AppUser user1,
                                            AppUser user2);
+
+    @Query("select m from Message m " +
+            "where m.chat = :chat " +
+            "order by m.timestamp desc limit 1")
+    Message getLastMessageInChat(@Param("chat") Chat chat);
+
+    List<Message> findTopByChatIdOrderByTimestampDesc(Integer chatId);
 }

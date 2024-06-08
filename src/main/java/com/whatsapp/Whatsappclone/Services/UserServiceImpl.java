@@ -72,4 +72,9 @@ public class UserServiceImpl implements UserService{
     public AppUser findUserByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
+
+    @Override
+    public List<AppUser> findChatTargetUser(Integer id, AppUser user) {
+        return userRepository.findChatTargetUser(id, user);
+    }
 }

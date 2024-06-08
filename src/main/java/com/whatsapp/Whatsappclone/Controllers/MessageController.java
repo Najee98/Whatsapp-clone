@@ -28,7 +28,7 @@ public class MessageController {
             @RequestHeader("Authorization") String jwt
             ){
         AppUser user = userService.findUserProfile(jwt);
-        Message message = messageService.sendMessage(request);
+        Message message = messageService.sendMessage(request, user);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

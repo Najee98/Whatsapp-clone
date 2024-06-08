@@ -5,13 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendMessageRequest implements Serializable {
+public class MessageDto implements Serializable {
 
-    private Integer chatId;
-    private String content;
+    Integer id;
+    String content;
+    LocalDateTime timeStamp;
 
 }

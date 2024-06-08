@@ -21,4 +21,9 @@ public interface UserRepository extends JpaRepository<AppUser, Integer> {
 
     @Query("select u from AppUser u where u.email = :username")
     AppUser findUserByUsername(@Param("username") String requestUserName);
+
+    @Query("select c.users from Chat c " +
+            "join c.users u " +
+            "where c.id = :chatId and u <> :user")
+    List<AppUser> findChatTargetUser(@Param("chatId") Integer chatId, @Param("user") AppUser user);
 }

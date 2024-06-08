@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
@@ -14,7 +15,7 @@ public interface ChatService {
 
     Chat findChatById(Integer chatId) throws ChatException;
 
-    List<Chat> findAllChatsByUserId(Integer userId);
+    List<ChatsIndexDto> findAllChatsByUserId(Integer userId);
 
     Chat createChatGroup(GroupChatRequest request, AppUser user) throws UserException;
 

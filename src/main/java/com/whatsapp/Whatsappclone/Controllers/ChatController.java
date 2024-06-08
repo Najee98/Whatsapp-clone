@@ -2,6 +2,7 @@ package com.whatsapp.Whatsappclone.Controllers;
 
 import com.whatsapp.Whatsappclone.Dto.AuthenticationResponse;
 import com.whatsapp.Whatsappclone.Dto.ChatRequest;
+import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Models.Chat;
@@ -55,11 +56,11 @@ public class ChatController {
     }
 
     @GetMapping("/by-user")
-    public ResponseEntity<List<Chat>> findChatsByUser(
+    public ResponseEntity<List<ChatsIndexDto>> findChatsByUser(
             @RequestParam Integer userId,
             @RequestHeader("Authorization") String jwt
     ){
-        List<Chat> chats = chatService.findAllChatsByUserId(userId);
+        List<ChatsIndexDto> chats = chatService.findAllChatsByUserId(userId);
 
         return new ResponseEntity<>(chats, HttpStatus.OK);
     }

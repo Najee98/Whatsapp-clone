@@ -11,6 +11,8 @@ import com.whatsapp.Whatsappclone.Models.Message;
 import com.whatsapp.Whatsappclone.Repositories.ChatRepository;
 import com.whatsapp.Whatsappclone.Repositories.MessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,13 +21,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService{
 
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final ChatService chatService;
     private final ChatRepository chatRepository;
+
+    @Autowired
+    public MessageServiceImpl(MessageRepository messageRepository, UserService userService, @Lazy ChatService chatService, ChatRepository chatRepository) {
+        this.messageRepository = messageRepository;
+        this.userService = userService;
+        this.chatService = chatService;
+        this.chatRepository = chatRepository;
+    }
 
 //    @Override
 //    public Message sendMessage(SendMessageRequest request) throws UserException, ChatException {
@@ -70,33 +79,37 @@ public class MessageServiceImpl implements MessageService{
 //    }
 
     @Override
-    public Message sendMessage(SendMessageRequest request) throws UserException, ChatException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String requestUserName = authentication.getName();
+    public Message sendMessage(SendMessageRequest request, AppUser user) throws UserException, ChatException {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        String requestUserName = authentication.getName();
 
-        AppUser requestUser = userService.findUserByUsername(requestUserName);
+//        AppUser requestUser = userService.findUserByUsername(requestUserName);
 
-        AppUser targetUser = userService.findUserById(request.getUserId());
+
 
         Chat chat = chatService.findChatById(request.getChatId());
-        if (chat == null) {
-            chat = new Chat();
-            chat.setGroup(false);
-            chat.setCreatedBy(requestUser);
-            chat.getUsers().add(requestUser);
-            chat.getUsers().add(targetUser);
-            chat = chatRepository.save(chat);
+//        if (chat == null) {
+//            chat = new Chat();
+//            chat.setGroup(false);
+//            chat.setCreatedBy(user);
+//            chat.getUsers().add(user);
+//            chat.getUsers().add(user);
+//            chat = chatRepository.save(chat);
+//        }
+
+        List<AppUser> receivers = userService.findChatTargetUser(chat.getId(), user);
+
+        for (int i = 0; i < receivers.size(); i++){
+            Message message = new Message();
+            message.setChat(chat);
+            message.setUser(receivers.get(i));
+            message.setContent(request.getContent());
+            message.setTimestamp(LocalDateTime.now());
+
+            messageRepository.save(message);
         }
 
-        Message message = new Message();
-        message.setChat(chat);
-        message.setUser(requestUser);
-        message.setContent(request.getContent());
-        message.setTimestamp(LocalDateTime.now());
-
-        messageRepository.save(message);
-
-        return message;
+        return messageRepository.getLastMessageInChat(chat);
     }
 
     @Override
@@ -132,5 +145,15 @@ public class MessageServiceImpl implements MessageService{
             messageRepository.deleteById(messageId);
 
         throw new UserException("Cannot delete another user message.");
+    }
+
+    @Override
+    public String getLastMessageContentForChat(Integer chatId, AppUser user) {
+        List<Message> messages = messageRepository.findTopByChatIdOrderByTimestampDesc(chatId);
+        if (!messages.isEmpty()) {
+            return messages.get(0).getContent();
+        } else {
+            return ""; // or any default value you want to use
+        }
     }
 }

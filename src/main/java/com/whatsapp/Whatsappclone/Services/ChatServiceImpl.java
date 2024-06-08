@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
@@ -9,6 +10,7 @@ import com.whatsapp.Whatsappclone.Repositories.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
     private final UserService userService;
+    private final MessageService messageService;
 
     @Override
     public Chat createChat(AppUser requestUser, Integer targetUserId) throws UserException {
@@ -54,10 +57,21 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<Chat> findAllChatsByUserId(Integer userId) {
+    public List<ChatsIndexDto> findAllChatsByUserId(Integer userId) {
         AppUser user = userService.findUserById(userId);
+        List<Object[]> chatDataList = chatRepository.findChatDataByUserId(user);
+        List<ChatsIndexDto> chats = new ArrayList<>();
 
-        List<Chat> chats = chatRepository.findChatByUserId(userId);
+        for (Object[] chatData : chatDataList) {
+            Integer chatId = (Integer) chatData[0];
+            String chatName = (String) chatData[1];
+            String chatImage = (String) chatData[2];
+            boolean isGroup = (boolean) chatData[3];
+
+            String lastMessageContent = messageService.getLastMessageContentForChat(chatId, user);
+            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent);
+            chats.add(dto);
+        }
 
         return chats;
     }
@@ -154,4 +168,5 @@ public class ChatServiceImpl implements ChatService {
 
         chatRepository.deleteById(chatId);
     }
+
 }

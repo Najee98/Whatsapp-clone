@@ -9,9 +9,12 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendMessageRequest implements Serializable {
+public class ChatsIndexDto implements Serializable {
 
-    private Integer chatId;
-    private String content;
+    Integer id;
+    String name;
+    String image;
+    boolean group;
+    String lastMessage;
 
 }

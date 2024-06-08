@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface MessageService {
 
-    Message sendMessage(SendMessageRequest request) throws UserException, ChatException;
+    Message sendMessage(SendMessageRequest request, AppUser user) throws UserException, ChatException;
     
     List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException;
 
@@ -20,4 +20,5 @@ public interface MessageService {
 
     void deleteMessage(Integer messageId, AppUser requestUser) throws MessageException;
 
+    String getLastMessageContentForChat(Integer chatId, AppUser user);
 }
