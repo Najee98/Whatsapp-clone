@@ -1,3 +1,5 @@
+package com.whatsapp.Whatsappclone.Controllers;
+
 import com.whatsapp.Whatsappclone.Models.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
