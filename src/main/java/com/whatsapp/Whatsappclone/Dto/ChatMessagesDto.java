@@ -18,5 +18,7 @@ public class ChatMessagesDto implements Serializable {
 
     Integer chatId;
     Integer userId;
+    String userName;
+    String userImage;
 
 }

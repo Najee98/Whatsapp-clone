@@ -23,7 +23,9 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             "m.content," +
             "m.timestamp," +
             "c.id," +
-            "u.id) " +
+            "u.id," +
+            "u.fullName," +
+            "u.profilePicture) " +
             "from Message m join m.chat c " +
             "join m.user u " +
             "where :user1 member of c.users " +
