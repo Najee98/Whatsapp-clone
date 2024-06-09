@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.whatsapp.Whatsappclone.Dto.ChatDetailsDto;
 import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
@@ -171,6 +172,22 @@ public class ChatServiceImpl implements ChatService {
                 );
 
         chatRepository.deleteById(chatId);
+    }
+
+    @Override
+    public ChatDetailsDto getChatDetails(Integer chatId) {
+        Chat chat = chatRepository.findChatDetails(chatId);
+
+        if (chat == null)
+            throw new ChatException("Unable to fetch chat details for chat: " + chat);
+
+        ChatDetailsDto response = new ChatDetailsDto();
+        response.setId(chat.getId());
+        response.setName(chat.getName());
+        response.setImage(chat.getImage());
+        response.setUsers(chat.getUsers());
+
+        return response;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.whatsapp.Whatsappclone.Dto.ChatDetailsDto;
 import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
@@ -27,4 +28,5 @@ public interface ChatService {
 
     void deleteChat(Integer chatId, Integer userId) throws UserException, ChatException;
 
+    ChatDetailsDto getChatDetails(Integer chatId);
 }

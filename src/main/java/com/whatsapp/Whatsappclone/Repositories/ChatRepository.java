@@ -1,5 +1,6 @@
 package com.whatsapp.Whatsappclone.Repositories;
 
+import com.whatsapp.Whatsappclone.Dto.ChatDetailsDto;
 import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Models.Chat;
@@ -38,4 +39,14 @@ public interface ChatRepository extends JpaRepository<Chat, Integer> {
 
     @Query("select c.id, c.name, c.image, c.isGroup from Chat c where :user member of c.users")
     List<Object[]> findChatDataByUserId(@Param("user") AppUser user);
+
+//    @Query("select new com.whatsapp.Whatsappclone.Dto.ChatDetailsDto(" +
+//            "c.id," +
+//            "c.name," +
+//            "c.image) " +
+//            "from Chat c " +
+//            "where c.id = :chatId")
+    @Query("select c from Chat c join fetch c.users " +
+            "where c.id = :chatId")
+    Chat findChatDetails(@Param("chatId") Integer chatId);
 }
