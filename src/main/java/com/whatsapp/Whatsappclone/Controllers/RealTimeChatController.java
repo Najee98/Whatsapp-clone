@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
+import java.text.SimpleDateFormat;
+
 @Controller
 @RequiredArgsConstructor
 public class RealTimeChatController {
@@ -21,9 +23,9 @@ public class RealTimeChatController {
     private final MessageService messageService;
     private final UserService userService;
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/topic/messages")
-    public Message sendMessage(@Payload SendMessageRequest message) {
+    @MessageMapping("/send")
+    @SendTo("/messages")
+    public Message send(SendMessageRequest message) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
@@ -33,23 +35,4 @@ public class RealTimeChatController {
         return messageService.sendMessage(message, user);
     }
 
-//    private final SimpMessagingTemplate simpMessagingTemplate;
-//
-//    @MessageMapping("/message")
-//    @SendTo("/group/public")
-//    public Message receiveMessage(@Payload Message message) {
-//        try {
-//            // Process the received message
-//
-//            // Broadcast the message to all clients in the same group
-//            simpMessagingTemplate.convertAndSend("/group/" + message.getChat().getId().toString(), message);
-//
-//            return message;
-//        } catch (Exception e) {
-//            // Handle exceptions
-//            // You can log the exception or send a custom error message to the client
-//            e.printStackTrace();
-//            return null; // Or return an error message object
-//        }
-//    }
 }
