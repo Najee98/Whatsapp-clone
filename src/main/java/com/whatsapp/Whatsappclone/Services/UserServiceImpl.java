@@ -8,6 +8,8 @@ import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,8 +45,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public AppUser findUserProfile(String jwt) {
 
-        DecodedJWT decodedJWT = JWT.decode(jwt);
-        String username = decodedJWT.getSubject();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+       // DecodedJWT decodedJWT = JWT.decode(jwt);
+        String username = authentication.getName();
 
         if(username == null)
             throw new BadCredentialsException("Invalid token received.");
