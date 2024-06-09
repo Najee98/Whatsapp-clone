@@ -7,20 +7,23 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Integer> {
 
-    @Query("select u from AppUser u where u.email = :email ")
+    @Query("select u from AppUser u where u.username = :email ")
     AppUser findByEmail(@Param("email") String email);
 
     @Query("select u from AppUser u " +
             "where u.fullName like %:query% " +
-            "or u.email like %:query% ")
+            "or u.username like %:query% ")
     List<AppUser> searchUser(@Param("query") String searchQuery);
 
-    @Query("select u from AppUser u where u.email = :username")
-    AppUser findUserByUsername(@Param("username") String requestUserName);
+    Optional<AppUser> findByUsername(String username);
+
+//    @Query("select u from AppUser u where u.email = :username")
+//    AppUser findUserByUsername(@Param("username") String requestUserName);
 
     @Query("select c.users from Chat c " +
             "join c.users u " +

@@ -3,16 +3,15 @@ package com.whatsapp.Whatsappclone.Controllers;
 import com.whatsapp.Whatsappclone.Dto.AuthenticationResponse;
 import com.whatsapp.Whatsappclone.Dto.LoginRequest;
 import com.whatsapp.Whatsappclone.Dto.RegistrationRequest;
-import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Repositories.UserRepository;
-import com.whatsapp.Whatsappclone.Security.JWT.TokenProvider;
-import com.whatsapp.Whatsappclone.Services.CustomUserService;
-import jakarta.servlet.Registration;
+import com.whatsapp.Whatsappclone.Security.JWT.JwtTokenUtil;
+import com.whatsapp.Whatsappclone.Security.UserRole;
+import com.whatsapp.Whatsappclone.Services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,64 +22,50 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationController {
 
-    private final UserRepository userRepository;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
-    private final CustomUserService customUserService;
+    private final UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest userRequest) {
-        AppUser isUser = userRepository.findByEmail(userRequest.getEmail());
-
-        if (isUser != null)
-            throw new UserException("Email already taken.");
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest request) {
+        log.info("Registration request received for user: {}", request.getEmail());
 
         AppUser user = new AppUser();
 
-        user.setEmail(userRequest.getEmail());
-        user.setFullName(userRequest.getFullName());
-        //     user.setProfilePicture(user.getProfilePicture());
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setUsername(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.ROLE_USER);
+        user.setFullName(request.getFullName());
 
         userRepository.save(user);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userRequest.getEmail(), userRequest.getPassword());
-
+        Authentication authentication = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = "Bearer " + jwtTokenUtil.generateToken(userDetails);
 
-        AuthenticationResponse response = new AuthenticationResponse(jwt, true);
+        AuthenticationResponse response = new AuthenticationResponse(token, true);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
+        log.info("Login request received for user: {}", request.getEmail());
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = "Bearer " + jwtTokenUtil.generateToken(userDetails);
 
-        Authentication authentication = authenticate(request.getEmail(), request.getPassword());
+        AuthenticationResponse response = new AuthenticationResponse(token, true);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return ResponseEntity.ok(response);
 
-        String jwt = "Bearer " + tokenProvider.generateToken(authentication);
-
-        AuthenticationResponse response = new AuthenticationResponse(jwt, true);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    public Authentication authenticate (String username, String password){
-        UserDetails userDetails = customUserService.loadUserByUsername(username);
-
-        if (userDetails == null)
-            throw new BadCredentialsException("Invalid username.");
-
-        if (!passwordEncoder.matches(password, userDetails.getPassword()))
-            throw new BadCredentialsException("Invalid password.");
-
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

@@ -1,10 +1,11 @@
 package com.whatsapp.Whatsappclone.Services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.whatsapp.Whatsappclone.Dto.UpdateUserRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
 import com.whatsapp.Whatsappclone.Models.AppUser;
 import com.whatsapp.Whatsappclone.Repositories.UserRepository;
-import com.whatsapp.Whatsappclone.Security.JWT.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,6 @@ import java.util.List;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-    private final TokenProvider tokenProvider;
 
     @Override
     public AppUser findUserById(Integer id) {
@@ -42,15 +42,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public AppUser findUserProfile(String jwt) {
-        String email = tokenProvider.getEmailFromToken(jwt);
 
-        if(email == null)
+        DecodedJWT decodedJWT = JWT.decode(jwt);
+        String username = decodedJWT.getSubject();
+
+        if(username == null)
             throw new BadCredentialsException("Invalid token received.");
 
-        AppUser user = userRepository.findByEmail(email);
-
-        if (user == null)
-            throw new UserException("User with email: " + email + " not found.");
+        AppUser user = userRepository.findByUsername(username)
+                .orElseThrow(
+                        () -> new UserException("User with username: " + username + " not found.")
+                );
 
         return user;
     }
@@ -70,7 +72,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public AppUser findUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findByUsername(username).get();
     }
 
     @Override
