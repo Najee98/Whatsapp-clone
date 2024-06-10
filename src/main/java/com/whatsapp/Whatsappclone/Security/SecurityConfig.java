@@ -35,42 +35,7 @@ public class SecurityConfig {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf()
-                .disable()
-                .cors(withDefaults())  // Enable CORS with default settings
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/ws/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> {
-                    ex.authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"));
-                    ex.accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"));
-                });
-
-        return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
-
-//    @Bean
+    //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        return http
 //                .csrf(AbstractHttpConfigurer::disable)
@@ -87,6 +52,63 @@ public class SecurityConfig {
 //                })
 //                .build();
 //    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http
+                .csrf()
+                .disable()
+                .cors()
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers("/auth/**", "/ws/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf()
+//                .disable()
+//                .cors(withDefaults())  // Enable CORS with default settings
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/**", "/ws/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"));
+//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden"));
+//                });
+//
+//        return http.build();
+//    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
