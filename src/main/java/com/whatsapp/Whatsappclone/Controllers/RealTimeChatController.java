@@ -28,13 +28,6 @@ public class RealTimeChatController {
     public void chat(@Payload SendMessageRequest message) {
         log.info("Message received: {}", message);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        AppUser user = userService.findUserByUsername(username);
-
-        Message msg = messageService.sendMessage(message, user);
-
         String topic = "/topic/chat/" + message.getChatId();
         simpMessagingTemplate.convertAndSend(topic, message);
     }
