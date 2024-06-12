@@ -58,7 +58,7 @@ public class ChatController {
             @RequestHeader("Authorization") String jwt
     ){
 
-        return new ResponseEntity<ChatDetailsDto>(chatService.getChatDetails(chatId), HttpStatus.OK);
+        return new ResponseEntity<>(chatService.getChatDetails(chatId), HttpStatus.OK);
 
     }
 

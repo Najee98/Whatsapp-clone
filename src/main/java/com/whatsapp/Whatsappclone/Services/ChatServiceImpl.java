@@ -54,7 +54,6 @@ public class ChatServiceImpl implements ChatService {
                         () -> new ChatException("Chat with id: " + chatId + " not found")
                 ));
 
-
         return chat.get();
     }
 
