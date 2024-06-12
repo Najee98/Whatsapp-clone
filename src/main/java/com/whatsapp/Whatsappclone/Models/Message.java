@@ -25,16 +25,16 @@ public class Message {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "from_user") // Add JoinColumn annotation
+    @JoinColumn(name = "from_user")
     private AppUser fromUser;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "user_id") // Add JoinColumn annotation
+    @JoinColumn(name = "user_id")
     private AppUser user;
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "chat_id") // Add JoinColumn annotation
+    @JoinColumn(name = "chat_id")
     private Chat chat;
 }

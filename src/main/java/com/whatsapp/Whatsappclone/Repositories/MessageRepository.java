@@ -37,27 +37,25 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                                            AppUser user1,
                                            AppUser user2);
 
+    @Query("select new com.whatsapp.Whatsappclone.Dto.ChatMessagesDto(" +
+            "m.id," +
+            "m.content," +
+            "m.timestamp," +
+            "c.id," +
+            "u.id," +
+            "u.fullName," +
+            "u.profilePicture) " +
+            "from Message m join m.chat c " +
+            "join m.fromUser u " +
+            "where :user1 member of c.users " +
+            "and m.chat.id = :chatId")
+    List<ChatMessagesDto> findChatMessagesForGroup(Integer chatId, AppUser user1);
 
-//    @Query("select new com.whatsapp.Whatsappclone.Dto.ChatMessagesDto(" +
-//            "m.id," +
-//            "m.content," +
-//            "m.timestamp," +
-//            "c.id," +
-//            "u.id," +
-//            "u.fullName," +
-//            "u.profilePicture) " +
-//            "from Message m join m.chat c " +
-//            "join m.user u " +
-//            "where m.chat.id = :chatId " +
-//            "and ()")
-//    List<ChatMessagesDto> findChatMessages(@Param("chatId") Integer chatId,
-//                                           @Param("firstUserId") Integer firstUserId,
-//                                           @Param("secondUserId") Integer secondUserId);
-//
     @Query("select m from Message m " +
             "where m.chat = :chat " +
             "order by m.timestamp desc limit 1")
     Message getLastMessageInChat(@Param("chat") Chat chat);
 
     List<Message> findTopByChatIdOrderByTimestampDesc(Integer chatId);
+
 }

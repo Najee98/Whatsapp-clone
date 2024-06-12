@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -85,22 +86,27 @@ public class MessageServiceImpl implements MessageService{
 
         List<AppUser> receivers = userService.findChatTargetUser(chat.getId(), fromUser);
 
-        for (int i = 0; i < receivers.size(); i++){
-            Message message = new Message();
-            message.setFromUser(fromUser);
-            message.setChat(chat);
-            message.setUser(receivers.get(i));
-            message.setContent(request.getContent());
-            message.setTimestamp(LocalDateTime.now());
+        Message message = new Message();
 
-            messageRepository.save(message);
+        message.setFromUser(fromUser);
+        message.setChat(chat);
+        message.setContent(request.getContent());
+        message.setTimestamp(LocalDateTime.now());
+
+        if (!chat.isGroup() == true){
+            message.setUser(receivers.get(0));
         }
+
+        messageRepository.save(message);
 
         return messageRepository.getLastMessageInChat(chat);
     }
 
     @Override
     public List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
+
+        List<ChatMessagesDto> messages = new ArrayList<>();
+
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(
                         () -> new ChatException("Chat not found")
@@ -112,7 +118,10 @@ public class MessageServiceImpl implements MessageService{
         AppUser user1 = chat.getUsers().get(0);
         AppUser user2 = chat.getUsers().get(1);
 
-        List<ChatMessagesDto> messages = messageRepository.findChatMessages(chatId, user1, user2);
+        if (!chat.isGroup())
+            messages = messageRepository.findChatMessages(chatId, user1, user2);
+        else
+            messages = messageRepository.findChatMessagesForGroup(chatId, user1);
 
         return messages;
     }
