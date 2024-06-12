@@ -73,15 +73,22 @@ public class ChatServiceImpl implements ChatService {
             String lastMessageContent = messageService.getLastMessageContentForChat(chatId, user);
             LocalDateTime lastMessageTimeStamp = messageService.getLastMessageTimeStampForChat(chatId, user);
 
-            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp);
+            LocalDateTime createdAt = (LocalDateTime) chatData[4];
+
+            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp, createdAt);
             chats.add(dto);
         }
 
-        // Sort chats list based on last message timestamp in descending order
-        Collections.sort(chats, Comparator.comparing(ChatsIndexDto::getLastMessageTimeStamp).reversed());
+        // Sort chats list based on last message timestamp first, and creation date if timestamp is null
+        chats.sort((chat1, chat2) -> {
+            LocalDateTime time1 = chat1.getLastMessageTimeStamp() != null ? chat1.getLastMessageTimeStamp() : chat1.getCreatedAt();
+            LocalDateTime time2 = chat2.getLastMessageTimeStamp() != null ? chat2.getLastMessageTimeStamp() : chat2.getCreatedAt();
+            return time2.compareTo(time1);
+        });
 
         return chats;
     }
+
 
     @Override
     public Chat createChatGroup(GroupChatRequest request, AppUser requestUser) throws UserException {

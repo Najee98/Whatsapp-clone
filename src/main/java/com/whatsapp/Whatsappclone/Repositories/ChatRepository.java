@@ -37,7 +37,7 @@ public interface ChatRepository extends JpaRepository<Chat, Integer> {
 //            "where c.users = :user ")
 //    List<ChatsIndexDto> findChatByUserId(@Param("user") AppUser user);
 
-    @Query("select c.id, c.name, c.image, c.isGroup from Chat c where :user member of c.users")
+    @Query("select c.id, c.name, c.image, c.isGroup, c.createdAt from Chat c where :user member of c.users")
     List<Object[]> findChatDataByUserId(@Param("user") AppUser user);
 
 //    @Query("select new com.whatsapp.Whatsappclone.Dto.ChatDetailsDto(" +
