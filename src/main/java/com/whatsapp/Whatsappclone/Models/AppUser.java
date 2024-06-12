@@ -1,6 +1,7 @@
 package com.whatsapp.Whatsappclone.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.whatsapp.Whatsappclone.Security.UserRole;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,12 +26,14 @@ public class AppUser implements UserDetails {
     private String fullName;
     private String username;
     private String profilePicture;
+    @JsonIgnore
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
@@ -55,46 +58,3 @@ public class AppUser implements UserDetails {
         return true;
     }
 }
-
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-//import jakarta.persistence.*;
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//
-//import java.util.Objects;
-//
-//@Entity
-//@Table(name = "users")
-//@Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class AppUser {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Integer id;
-//
-//    private String fullName;
-//    private String email;
-//    private String profilePicture;
-//    @JsonIgnore
-//    private String password;
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        AppUser appUser = (AppUser) o;
-//        return Objects.equals(id, appUser.id) &&
-//                Objects.equals(fullName, appUser.fullName) &&
-//                Objects.equals(email, appUser.email) &&
-//                Objects.equals(profilePicture, appUser.profilePicture) &&
-//                Objects.equals(password, appUser.password);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, fullName, email, profilePicture, password);
-//    }
-//}
