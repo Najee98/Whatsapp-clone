@@ -191,20 +191,29 @@ public class ChatServiceImpl implements ChatService {
     public ChatDetailsDto getChatDetails(Integer chatId) {
         Chat chat = chatRepository.findChatDetails(chatId);
 
-        if (chat == null)
-            throw new ChatException("Unable to fetch chat details for chat: " + chat.getId());
+        if (chat == null) {
+            throw new ChatException("Unable to fetch chat details for chat: " + chatId); // Fixed to use chatId
+        }
 
         ChatDetailsDto response = new ChatDetailsDto();
         response.setId(chat.getId());
-        if (chat.isGroup())
+
+        // Add logging to check the value of isGroup
+        boolean isGroup = chat.isGroup();
+        System.out.println("isGroup: " + isGroup); // or use a logger if available
+
+        if (isGroup) {
             response.setName(chat.getName());
-        else
+        } else {
             response.setName(getChatSecondUser(chatId).getFullName());
+        }
+
         response.setImage(chat.getImage());
         response.setUsers(chat.getUsers());
 
         return response;
     }
+
 
     //fetch the chat name based on the other user in chat for display
     private AppUser getChatSecondUser (Integer chatId) {
