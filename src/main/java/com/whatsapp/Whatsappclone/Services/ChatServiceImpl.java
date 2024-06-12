@@ -58,7 +58,6 @@ public class ChatServiceImpl implements ChatService {
         return chat.get();
     }
 
-    @Override
     public List<ChatsIndexDto> findAllChatsByUserId(Integer userId) {
         AppUser user = userService.findUserById(userId);
         List<Object[]> chatDataList = chatRepository.findChatDataByUserId(user);
@@ -72,22 +71,26 @@ public class ChatServiceImpl implements ChatService {
 
             String lastMessageContent = messageService.getLastMessageContentForChat(chatId, user);
             LocalDateTime lastMessageTimeStamp = messageService.getLastMessageTimeStampForChat(chatId, user);
-
             LocalDateTime createdAt = (LocalDateTime) chatData[4];
 
-            ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp, createdAt);
-            chats.add(dto);
+            // Include group chats and only single chats with messages
+            if (isGroup || lastMessageTimeStamp != null) {
+                ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp, createdAt);
+                chats.add(dto);
+            }
         }
 
-        // Sort chats list based on last message timestamp first, and creation date if timestamp is null
+        // Sort chats list based on last message timestamp for single chats,
+        // and creation date for group chats if lastMessageTimeStamp is null
         chats.sort((chat1, chat2) -> {
             LocalDateTime time1 = chat1.getLastMessageTimeStamp() != null ? chat1.getLastMessageTimeStamp() : chat1.getCreatedAt();
             LocalDateTime time2 = chat2.getLastMessageTimeStamp() != null ? chat2.getLastMessageTimeStamp() : chat2.getCreatedAt();
-            return time2.compareTo(time1);
+            return time2.compareTo(time1); // Sort in descending order
         });
 
         return chats;
     }
+
 
 
     @Override
