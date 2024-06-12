@@ -43,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
         chat.getUsers().add(requestUser);
         chat.getUsers().add(targetUser);
         chat.setGroup(false);
+        chat.setCreatedAt(new Date());
 
         return chatRepository.save(chat);
     }
@@ -91,12 +92,13 @@ public class ChatServiceImpl implements ChatService {
         group.setName(request.getChatName());
         group.setCreatedBy(requestUser);
         group.getAdmins().add(requestUser);
+        group.getUsers().add(requestUser);
+        group.setCreatedAt(new Date());
 
         for(Integer userId : request.getUserIds()){
             AppUser groupUser = userService.findUserById(userId);
             group.getUsers().add(groupUser);
         }
-        group.getUsers().add(requestUser);
 
         return chatRepository.save(group);
     }

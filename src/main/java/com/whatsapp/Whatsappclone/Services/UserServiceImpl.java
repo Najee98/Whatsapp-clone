@@ -31,11 +31,12 @@ public class UserServiceImpl implements UserService{
     public List<AppUser> searchUser(String searchQuery) {
 
         List<AppUser> users = new ArrayList<>();
+        AppUser requestUser = findUserProfile();
 
         if (searchQuery == null)
             users = userRepository.findAll();
         else
-            users = userRepository.searchUser(searchQuery);
+            users = userRepository.searchUser(searchQuery, requestUser.getId());
 
         return users;
     }

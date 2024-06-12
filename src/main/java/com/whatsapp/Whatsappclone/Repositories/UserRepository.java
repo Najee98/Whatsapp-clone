@@ -17,8 +17,10 @@ public interface UserRepository extends JpaRepository<AppUser, Integer> {
 
     @Query("select u from AppUser u " +
             "where u.fullName like %:query% " +
-            "or u.username like %:query% ")
-    List<AppUser> searchUser(@Param("query") String searchQuery);
+            "or u.username like %:query% " +
+            "and u.id <> :requestUserId")
+    List<AppUser> searchUser(@Param("query") String searchQuery,
+                             @Param("requestUserId") Integer requestUserId);
 
     Optional<AppUser> findByUsername(String username);
 
