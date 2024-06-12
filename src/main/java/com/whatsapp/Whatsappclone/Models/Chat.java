@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Chat {
     private Integer id;
     private String name;
     private String image;
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "is_group")
     private boolean isGroup;
