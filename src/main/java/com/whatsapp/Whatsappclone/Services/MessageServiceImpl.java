@@ -101,7 +101,10 @@ public class MessageServiceImpl implements MessageService{
 
     @Override
     public List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
-        Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new ChatException("Chat not found"));
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(
+                        () -> new ChatException("Chat not found")
+                );
 
         if (!chat.getUsers().contains(requestUser))
             throw new UserException("User is not in this chat.");

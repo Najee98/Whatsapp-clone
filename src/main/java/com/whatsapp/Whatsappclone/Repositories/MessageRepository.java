@@ -29,6 +29,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             "u.profilePicture) " +
             "from Message m join m.chat c " +
             "join m.user u " +
+            "join m.fromUser fru " +
             "where :user1 member of c.users " +
             "and :user2 member of c.users " +
             "and m.chat.id = :chatId")
@@ -36,6 +37,23 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                                            AppUser user1,
                                            AppUser user2);
 
+
+//    @Query("select new com.whatsapp.Whatsappclone.Dto.ChatMessagesDto(" +
+//            "m.id," +
+//            "m.content," +
+//            "m.timestamp," +
+//            "c.id," +
+//            "u.id," +
+//            "u.fullName," +
+//            "u.profilePicture) " +
+//            "from Message m join m.chat c " +
+//            "join m.user u " +
+//            "where m.chat.id = :chatId " +
+//            "and ()")
+//    List<ChatMessagesDto> findChatMessages(@Param("chatId") Integer chatId,
+//                                           @Param("firstUserId") Integer firstUserId,
+//                                           @Param("secondUserId") Integer secondUserId);
+//
     @Query("select m from Message m " +
             "where m.chat = :chat " +
             "order by m.timestamp desc limit 1")
