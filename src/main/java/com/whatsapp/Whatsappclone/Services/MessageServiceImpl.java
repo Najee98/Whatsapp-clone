@@ -120,8 +120,10 @@ public class MessageServiceImpl implements MessageService{
 
         if (!chat.isGroup())
             messages = messageRepository.findChatMessages(chatId, user1, user2);
-        else
+        else{
             messages = messageRepository.findChatMessagesForGroup(chatId, user1);
+
+        }
 
         return messages;
     }

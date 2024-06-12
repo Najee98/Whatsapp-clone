@@ -17,8 +17,13 @@ public class ChatMessagesDto implements Serializable {
     LocalDateTime timestamp;
 
     Integer chatId;
+
+    Integer senderId;
+    String SenderName;
+    String senderImage;
+
     Integer receiverId;
-    String userName;
-    String userImage;
+    String receiverName;
+    String receiverImage;
 
 }
