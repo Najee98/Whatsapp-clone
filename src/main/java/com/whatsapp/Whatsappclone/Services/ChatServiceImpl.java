@@ -33,7 +33,8 @@ public class ChatServiceImpl implements ChatService {
 
         Chat chat = new Chat();
         chat.setName(
-                userService.findUserById(targetUserId).getFullName()
+                "default chat name"
+           //     userService.findUserById(targetUserId).getFullName()
         );
         chat.setImage(
                 userService.findUserById(targetUserId).getProfilePicture()
@@ -53,6 +54,7 @@ public class ChatServiceImpl implements ChatService {
                         () -> new ChatException("Chat with id: " + chatId + " not found")
                 ));
 
+
         return chat.get();
     }
 
@@ -64,19 +66,19 @@ public class ChatServiceImpl implements ChatService {
 
         for (Object[] chatData : chatDataList) {
             Integer chatId = (Integer) chatData[0];
-            String chatName = (String) chatData[1];
             String chatImage = (String) chatData[2];
             boolean isGroup = (boolean) chatData[3];
+            String chatName = isGroup == true ? (String) chatData[1] : getChatName(chatId);
 
             String lastMessageContent = messageService.getLastMessageContentForChat(chatId, user);
             LocalDateTime lastMessageTimeStamp = messageService.getLastMessageTimeStampForChat(chatId, user);
+
             ChatsIndexDto dto = new ChatsIndexDto(chatId, chatName, chatImage, isGroup, lastMessageContent, lastMessageTimeStamp);
             chats.add(dto);
         }
 
         // Sort chats list based on last message timestamp in descending order
         Collections.sort(chats, Comparator.comparing(ChatsIndexDto::getLastMessageTimeStamp).reversed());
-
 
         return chats;
     }
@@ -183,11 +185,23 @@ public class ChatServiceImpl implements ChatService {
 
         ChatDetailsDto response = new ChatDetailsDto();
         response.setId(chat.getId());
-        response.setName(chat.getName());
+        response.setName(getChatName(chatId));
         response.setImage(chat.getImage());
         response.setUsers(chat.getUsers());
 
         return response;
+    }
+
+    //fetch the chat name based on the other user in chat for display
+    private String getChatName(Integer chatId) {
+        AppUser loggedInUser = userService.findUserProfile();
+
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("Chat not found"));
+
+        AppUser chatNameUser = chat.getUsers().get(0).equals(loggedInUser) ? chat.getUsers().get(1) : chat.getUsers().get(0);
+
+        return chatNameUser.getFullName();
     }
 
 }

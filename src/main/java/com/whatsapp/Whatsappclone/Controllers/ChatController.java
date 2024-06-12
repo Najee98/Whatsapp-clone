@@ -25,7 +25,7 @@ public class ChatController {
             @RequestBody ChatRequest request,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser requestUser = userService.findUserProfile(jwt);
+        AppUser requestUser = userService.findUserProfile();
         Chat chat = chatService.createChat(requestUser, request.getUserId());
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
@@ -36,7 +36,7 @@ public class ChatController {
             @RequestBody GroupChatRequest request,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser requestUser = userService.findUserProfile(jwt);
+        AppUser requestUser = userService.findUserProfile();
         Chat chat = chatService.createChatGroup(request, requestUser);
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
@@ -66,7 +66,7 @@ public class ChatController {
     public ResponseEntity<List<ChatsIndexDto>> findChatsByUser(
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser user = userService.findUserProfile(jwt);
+        AppUser user = userService.findUserProfile();
         List<ChatsIndexDto> chats = chatService.findAllChatsByUserId(user.getId());
 
         return new ResponseEntity<>(chats, HttpStatus.OK);
@@ -78,7 +78,7 @@ public class ChatController {
             @PathVariable Integer userId,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser requestUser = userService.findUserProfile(jwt);
+        AppUser requestUser = userService.findUserProfile();
         Chat chat = chatService.addUserToGroup(userId, chatId, requestUser);
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
@@ -90,7 +90,7 @@ public class ChatController {
             @PathVariable Integer userId,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser requestUser = userService.findUserProfile(jwt);
+        AppUser requestUser = userService.findUserProfile();
         Chat chat = chatService.removeFromGroup(chatId, userId, requestUser);
 
         return new ResponseEntity<>(chat, HttpStatus.OK);
@@ -101,7 +101,7 @@ public class ChatController {
             @PathVariable Integer chatId,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser requestUser = userService.findUserProfile(jwt);
+        AppUser requestUser = userService.findUserProfile();
         chatService.deleteChat(chatId, requestUser.getId());
         AuthenticationResponse response = new AuthenticationResponse("Chat has been deleted successfully.", false);
 

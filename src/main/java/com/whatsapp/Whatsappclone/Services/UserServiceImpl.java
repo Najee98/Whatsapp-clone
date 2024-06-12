@@ -1,7 +1,5 @@
 package com.whatsapp.Whatsappclone.Services;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.whatsapp.Whatsappclone.Dto.UpdateUserRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
 import com.whatsapp.Whatsappclone.Models.AppUser;
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public AppUser findUserProfile(String jwt) {
+    public AppUser findUserProfile() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

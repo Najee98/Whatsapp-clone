@@ -27,7 +27,7 @@ public class MessageController {
             @RequestBody SendMessageRequest request,
             @RequestHeader("Authorization") String jwt
             ){
-        AppUser fromUser = userService.findUserProfile(jwt);
+        AppUser fromUser = userService.findUserProfile();
         Message message = messageService.sendMessage(request, fromUser);
 
         return new ResponseEntity<>(message, HttpStatus.OK);
@@ -38,7 +38,7 @@ public class MessageController {
             @PathVariable Integer chatId,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser user = userService.findUserProfile(jwt);
+        AppUser user = userService.findUserProfile();
         List<ChatMessagesDto> messages = messageService.getChatMessages(chatId, user);
 
         return new ResponseEntity<>(messages, HttpStatus.OK);
@@ -49,7 +49,7 @@ public class MessageController {
             @PathVariable Integer messageId,
             @RequestHeader("Authorization") String jwt
     ){
-        AppUser user = userService.findUserProfile(jwt);
+        AppUser user = userService.findUserProfile();
         messageService.deleteMessage(messageId, user);
 
         AuthenticationResponse response = new AuthenticationResponse("Message deleted successfully.", false);

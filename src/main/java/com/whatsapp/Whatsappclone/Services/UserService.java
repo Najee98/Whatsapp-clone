@@ -14,7 +14,7 @@ public interface UserService {
 
     List<AppUser> searchUser(String searchQuery);
 
-    AppUser findUserProfile(String jwt);
+    AppUser findUserProfile();
 
     AppUser updateUser(Integer id, UpdateUserRequest request) throws UserException;
 

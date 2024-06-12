@@ -28,7 +28,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<AppUser> getUserProfile(@RequestHeader("Authorization") String token){
 
-        AppUser user = userService.findUserProfile(token);
+        AppUser user = userService.findUserProfile();
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -38,7 +38,7 @@ public class UserController {
             @RequestBody UpdateUserRequest request,
             @RequestHeader("Authorization") String token){
 
-        AppUser user = userService.findUserProfile(token);
+        AppUser user = userService.findUserProfile();
         userService.updateUser(user.getId(), request);
 
         UpdateUserResponse response = new UpdateUserResponse(
