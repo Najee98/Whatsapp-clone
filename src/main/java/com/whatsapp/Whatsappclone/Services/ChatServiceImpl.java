@@ -196,7 +196,10 @@ public class ChatServiceImpl implements ChatService {
 
         ChatDetailsDto response = new ChatDetailsDto();
         response.setId(chat.getId());
-        response.setName(getChatSecondUser(chatId).getFullName());
+        if (chat.isGroup())
+            response.setName(chat.getName());
+        else
+            response.setName(getChatSecondUser(chatId).getFullName());
         response.setImage(chat.getImage());
         response.setUsers(chat.getUsers());
 
