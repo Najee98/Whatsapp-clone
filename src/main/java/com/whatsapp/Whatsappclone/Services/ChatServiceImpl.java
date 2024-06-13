@@ -244,7 +244,7 @@ public class ChatServiceImpl implements ChatService {
 
         // Log the value of isGroup
         boolean isGroup = chat.isGroup();
-        System.out.println("isGroup: " + isGroup); // or use a logger if available
+        System.out.println("isGroup: " + isGroup);
 
         if (isGroup) {
             response.setName(chat.getName());
