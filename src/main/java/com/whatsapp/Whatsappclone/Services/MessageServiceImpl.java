@@ -10,11 +10,8 @@ import com.whatsapp.Whatsappclone.Models.Chat;
 import com.whatsapp.Whatsappclone.Models.Message;
 import com.whatsapp.Whatsappclone.Repositories.ChatRepository;
 import com.whatsapp.Whatsappclone.Repositories.MessageRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,63 +34,28 @@ public class MessageServiceImpl implements MessageService{
         this.chatRepository = chatRepository;
     }
 
-//    @Override
-//    public Message sendMessage(SendMessageRequest request) throws UserException, ChatException {
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        AppUser requestUser = (AppUser) authentication.getPrincipal();
-//
-//        AppUser targetUser = userService.findUserById(request.getUserId());
-//
-//        Chat chat = chatService.findChatById(request.getChatId());
-//
-//        Message message = new Message();
-//
-//        chat.getUsers().add(requestUser);
-//        chat.getUsers().add(targetUser);
-//
-//        message.setChat(chat);
-//        message.setUser(targetUser);
-//        message.setContent(request.getContent());
-//        message.setTimestamp(LocalDateTime.now());
-//
-//        messageRepository.save(message);
-//
-//        return message;
-//    }
-//
-//    @Override
-//    public List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
-//
-//        Chat chat = chatRepository.findById(chatId).get();
-//
-//        if (!chat.getUsers().contains(requestUser))
-//            throw new UserException("User is not in this chat.");
-//
-//        AppUser user1 = chat.getUsers().get(0);
-//        AppUser user2 = chat.getUsers().get(1);
-////        List<Message> messages = messageRepository.findByChatId(chatId);
-//
-//        List<ChatMessagesDto> messages = messageRepository.findChatMessages(chatId, user1, user2);
-//
-//        return messages;
-//    }
-
+    /**
+     * Sends a message in a chat.
+     *
+     * @param request the message request details
+     * @param fromUser the user sending the message
+     * @return the last message in the chat after the new message is sent
+     * @throws UserException if there is a user-related error
+     * @throws ChatException if the chat cannot be found
+     */
     @Override
     public Message sendMessage(SendMessageRequest request, AppUser fromUser) throws UserException, ChatException {
-
         Chat chat = chatService.findChatById(request.getChatId());
 
         List<AppUser> receivers = userService.findChatTargetUser(chat.getId(), fromUser);
 
         Message message = new Message();
-
         message.setFromUser(fromUser);
         message.setChat(chat);
         message.setContent(request.getContent());
         message.setTimestamp(LocalDateTime.now());
 
-        if (!chat.isGroup() == true){
+        if (!chat.isGroup()) {
             message.setUser(receivers.get(0));
         }
 
@@ -102,52 +64,65 @@ public class MessageServiceImpl implements MessageService{
         return messageRepository.getLastMessageInChat(chat);
     }
 
+    /**
+     * Retrieves all messages in a chat for a specific user.
+     *
+     * @param chatId the ID of the chat
+     * @param requestUser the user requesting the messages
+     * @return a list of chat messages DTOs
+     * @throws ChatException if the chat cannot be found
+     * @throws UserException if the user is not in the chat
+     */
     @Override
     public List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException {
-
         List<ChatMessagesDto> messages = new ArrayList<>();
 
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(
-                        () -> new ChatException("Chat not found")
-                );
+                .orElseThrow(() -> new ChatException("Chat not found"));
 
-        if (!chat.getUsers().contains(requestUser))
+        if (!chat.getUsers().contains(requestUser)) {
             throw new UserException("User is not in this chat.");
+        }
 
         AppUser user1 = chat.getUsers().get(0);
         AppUser user2 = chat.getUsers().get(1);
 
-        if (!chat.isGroup())
+        if (!chat.isGroup()) {
             messages = messageRepository.findChatMessages(chatId, user1, user2);
-        else{
+        } else {
             messages = messageRepository.findChatMessagesForGroup(chatId, user1);
-
         }
 
         return messages;
     }
 
-
-    @Override
-    public Message findMessageById(Integer messageId) throws MessageException {
-        Message message = messageRepository.findById(messageId)
-                .orElseThrow(() -> new MessageException("Message with id: " + messageId + " not found."));
-
-        return message;
-    }
-
+    /**
+     * Deletes a message.
+     *
+     * @param messageId the ID of the message to delete
+     * @param requestUser the user requesting the deletion
+     * @throws MessageException if the message cannot be found
+     * @throws UserException if the user is not authorized to delete the message
+     */
     @Override
     public void deleteMessage(Integer messageId, AppUser requestUser) throws MessageException {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageException("Message with id: " + messageId + " not found."));
 
-        if (message.getUser().equals(requestUser.getId()))
+        if (message.getUser().equals(requestUser.getId())) {
             messageRepository.deleteById(messageId);
-
-        throw new UserException("Cannot delete another user message.");
+        } else {
+            throw new UserException("Cannot delete another user's message.");
+        }
     }
 
+    /**
+     * Gets the content of the last message in a chat for a specific user.
+     *
+     * @param chatId the ID of the chat
+     * @param user the user requesting the last message content
+     * @return the content of the last message
+     */
     @Override
     public String getLastMessageContentForChat(Integer chatId, AppUser user) {
         List<Message> messages = messageRepository.findTopByChatIdOrderByTimestampDesc(chatId);
@@ -158,6 +133,13 @@ public class MessageServiceImpl implements MessageService{
         }
     }
 
+    /**
+     * Gets the timestamp of the last message in a chat for a specific user.
+     *
+     * @param chatId the ID of the chat
+     * @param user the user requesting the last message timestamp
+     * @return the timestamp of the last message
+     */
     @Override
     public LocalDateTime getLastMessageTimeStampForChat(Integer chatId, AppUser user) {
         List<Message> messages = messageRepository.findTopByChatIdOrderByTimestampDesc(chatId);

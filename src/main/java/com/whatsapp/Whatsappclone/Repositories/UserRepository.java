@@ -12,9 +12,23 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Integer> {
 
-    @Query("select u from AppUser u where u.username = :email ")
+    /**
+     * Finds an AppUser by their email (username).
+     *
+     * @param email the email (username) to search for.
+     * @return the AppUser with the given email.
+     */
+    @Query("select u from AppUser u where u.username = :email")
     AppUser findByEmail(@Param("email") String email);
 
+    /**
+     * Searches for users whose full name or username contains the search query,
+     * excluding the user with the specified ID.
+     *
+     * @param searchQuery   the text to search for in full names and usernames.
+     * @param requestUserId the ID of the user to exclude from the results.
+     * @return a list of users matching the search criteria.
+     */
     @Query("select u from AppUser u " +
             "where (u.fullName like %:query% " +
             "or u.username like %:query%) " +
@@ -22,11 +36,21 @@ public interface UserRepository extends JpaRepository<AppUser, Integer> {
     List<AppUser> searchUser(@Param("query") String searchQuery,
                              @Param("requestUserId") Integer requestUserId);
 
+    /**
+     * Finds an AppUser by their username.
+     *
+     * @param username the username to search for.
+     * @return an Optional containing the AppUser, if found.
+     */
     Optional<AppUser> findByUsername(String username);
 
-//    @Query("select u from AppUser u where u.email = :username")
-//    AppUser findUserByUsername(@Param("username") String requestUserName);
-
+    /**
+     * Finds users in a chat excluding the specified user.
+     *
+     * @param chatId the ID of the chat.
+     * @param user   the user to exclude from the results.
+     * @return a list of users in the chat excluding the specified user.
+     */
     @Query("select c.users from Chat c " +
             "join c.users u " +
             "where c.id = :chatId and u <> :user")

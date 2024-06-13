@@ -14,11 +14,14 @@ import java.util.List;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
-    @Query("select m from Message m " +
-            "join m.chat c " +
-            "where c.id = :chatId")
-    public List<Message> findByChatId(@Param("chatId") Integer chatId);
-
+    /**
+     * Retrieves chat messages for a single chat between two users.
+     *
+     * @param chatId the ID of the chat.
+     * @param user1  the first user in the chat.
+     * @param user2  the second user in the chat.
+     * @return a list of chat messages as ChatMessagesDto objects.
+     */
     @Query("select new com.whatsapp.Whatsappclone.Dto.ChatMessagesDto(" +
             "m.id," +
             "m.content," +
@@ -40,6 +43,13 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                                            AppUser user1,
                                            AppUser user2);
 
+    /**
+     * Retrieves chat messages for a group chat.
+     *
+     * @param chatId the ID of the chat.
+     * @param user1  a user in the group chat.
+     * @return a list of chat messages as ChatMessagesDto objects.
+     */
     @Query("select new com.whatsapp.Whatsappclone.Dto.ChatMessagesDto(" +
             "m.id," +
             "m.content," +
@@ -55,13 +65,25 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             "join m.fromUser u " +
             "where :user1 member of c.users " +
             "and m.chat.id = :chatId")
-    List<ChatMessagesDto> findChatMessagesForGroup(Integer chatId, AppUser user1);
+    List<ChatMessagesDto> findChatMessagesForGroup(@Param("chatId") Integer chatId, AppUser user1);
 
+    /**
+     * Retrieves the last message in a given chat.
+     *
+     * @param chat the chat to find the last message for.
+     * @return the last message in the chat.
+     */
     @Query("select m from Message m " +
             "where m.chat = :chat " +
             "order by m.timestamp desc limit 1")
     Message getLastMessageInChat(@Param("chat") Chat chat);
 
+    /**
+     * Finds the most recent message in a chat by chat ID.
+     *
+     * @param chatId the ID of the chat.
+     * @return a list of messages with the most recent one at the top.
+     */
     List<Message> findTopByChatIdOrderByTimestampDesc(Integer chatId);
 
 }

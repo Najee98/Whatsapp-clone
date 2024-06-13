@@ -17,8 +17,6 @@ public interface MessageService {
     
     List<ChatMessagesDto> getChatMessages(Integer chatId, AppUser requestUser) throws ChatException;
 
-    Message findMessageById(Integer messageId) throws MessageException;
-
     void deleteMessage(Integer messageId, AppUser requestUser) throws MessageException;
 
     String getLastMessageContentForChat(Integer chatId, AppUser user);

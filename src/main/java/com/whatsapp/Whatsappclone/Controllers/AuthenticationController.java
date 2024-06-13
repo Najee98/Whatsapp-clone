@@ -31,41 +31,67 @@ public class AuthenticationController {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    /**
+     * Endpoint for user registration.
+     * Registers a new user with the provided registration details.
+     *
+     * @param request the registration request containing user details
+     * @return authentication response with JWT token
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegistrationRequest request) {
         log.info("Registration request received for user: {}", request.getEmail());
 
+        // Create a new AppUser object and populate it with registration details
         AppUser user = new AppUser();
-
         user.setUsername(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(UserRole.ROLE_USER);
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Encrypt password
+        user.setRole(UserRole.ROLE_USER); // Set default role
         user.setFullName(request.getFullName());
 
+        // Save the user to the database
         userRepository.save(user);
 
+        // Authenticate the user after registration
         Authentication authentication = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // Load UserDetails for the authenticated user
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+
+        // Generate JWT token for the user
         String token = "Bearer " + jwtTokenUtil.generateToken(userDetails);
 
+        // Create authentication response with token
         AuthenticationResponse response = new AuthenticationResponse(token, true);
 
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Endpoint for user login.
+     * Authenticates a user with the provided login credentials.
+     *
+     * @param request the login request containing user credentials
+     * @return authentication response with JWT token
+     */
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
         log.info("Login request received for user: {}", request.getEmail());
+
+        // Authenticate user with provided credentials
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        // Load UserDetails for the authenticated user
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+
+        // Generate JWT token for the user
         String token = "Bearer " + jwtTokenUtil.generateToken(userDetails);
 
+        // Create authentication response with token
         AuthenticationResponse response = new AuthenticationResponse(token, true);
 
         return ResponseEntity.ok(response);
-
     }
 }

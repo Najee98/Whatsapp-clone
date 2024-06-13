@@ -1,13 +1,27 @@
 package com.whatsapp.Whatsappclone.Exceptions.CustomExceptions;
 
-public class MessageException extends RuntimeException{
+/**
+ * MessageException is a custom exception that represents errors specific to message operations.
+ * It extends RuntimeException, so it is unchecked and can be thrown during runtime without being declared.
+ */
+public class MessageException extends RuntimeException {
 
+    /**
+     * Constructs a new MessageException with the specified detail message.
+     *
+     * @param exceptionMessage The detail message explaining the reason for the exception.
+     */
     public MessageException(String exceptionMessage) {
-        super(exceptionMessage);
+        super(exceptionMessage); // Calls the superclass constructor with the provided message.
     }
 
+    /**
+     * Constructs a new MessageException with the specified detail message and cause.
+     *
+     * @param exceptionMessage The detail message explaining the reason for the exception.
+     * @param exceptionCause The cause of the exception, which can be retrieved later using the getCause() method.
+     */
     public MessageException(String exceptionMessage, Throwable exceptionCause) {
-        super(exceptionMessage, exceptionCause);
+        super(exceptionMessage, exceptionCause); // Calls the superclass constructor with the provided message and cause.
     }
-
 }

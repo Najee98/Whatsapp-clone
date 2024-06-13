@@ -18,7 +18,5 @@ public interface UserService {
 
     AppUser updateUser(Integer id, UpdateUserRequest request) throws UserException;
 
-    AppUser findUserByUsername(String username);
-
     List<AppUser> findChatTargetUser(Integer id, AppUser user);
 }

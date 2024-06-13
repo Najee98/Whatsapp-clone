@@ -18,6 +18,12 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * Endpoint to search for users based on a search query.
+     *
+     * @param searchQuery the query string to search users
+     * @return ResponseEntity with a list of AppUser objects
+     */
     @GetMapping()
     public ResponseEntity<List<AppUser>> searchUsers(@RequestParam String searchQuery){
         List<AppUser> users = userService.searchUser(searchQuery);
@@ -25,6 +31,12 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint to fetch the user profile of the authenticated user.
+     *
+     * @param token JWT token in the authorization header
+     * @return ResponseEntity with the AppUser object representing the user profile
+     */
     @GetMapping("/profile")
     public ResponseEntity<AppUser> getUserProfile(@RequestHeader("Authorization") String token){
 
@@ -33,6 +45,13 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint to update the user profile of the authenticated user.
+     *
+     * @param request UpdateUserRequest object containing updated user details
+     * @param token   JWT token in the authorization header
+     * @return ResponseEntity with UpdateUserResponse indicating success or failure of the update
+     */
     @PutMapping("/update")
     public ResponseEntity<UpdateUserResponse> updateUserProfile(
             @RequestBody UpdateUserRequest request,
@@ -48,6 +67,4 @@ public class UserController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
 }

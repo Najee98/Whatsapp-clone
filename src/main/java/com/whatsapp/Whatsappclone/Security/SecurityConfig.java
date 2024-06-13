@@ -22,8 +22,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 public class SecurityConfig {
 
@@ -35,71 +33,67 @@ public class SecurityConfig {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    //    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/**", "/ws/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) -> response.sendError(401, "Unauthorized"));
-//                    ex.accessDeniedHandler((request, response, authException) -> response.sendError(403, "Forbidden"));
-//                })
-//                .build();
-//    }
-
+    /**
+     * Configures the security filter chain for HTTP requests.
+     *
+     * @param http the HttpSecurity object to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                .csrf()
-                .disable()
-                .cors()
-                .and()
+                .csrf().disable() // Disable CSRF protection
+                .cors().and() // Enable CORS support
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/**", "/ws/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers("/auth/**", "/ws/**").permitAll() // Allow these endpoints without authentication
+                .anyRequest().authenticated() // Require authentication for all other requests
                 .and()
-                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the default username/password filter
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Use stateless sessions
 
         return http.build();
     }
 
+    /**
+     * Configures CORS settings for the application.
+     *
+     * @return the configured CorsConfigurationSource
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-     //   configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowedOrigins(List.of("*")); // Allow all origins
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow these HTTP methods
+        configuration.setAllowedHeaders(List.of("*")); // Allow all headers
+        configuration.setExposedHeaders(List.of("Authorization")); // Expose the Authorization header
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Apply this configuration to all endpoints
 
         return source;
     }
 
-
+    /**
+     * Configures the password encoder for the application.
+     *
+     * @return the configured PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Use BCrypt for password hashing
     }
 
+    /**
+     * Configures the authentication manager for the application.
+     *
+     * @return the configured AuthenticationManager
+     */
     @Bean
     public AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder());
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
         provider.setUserDetailsService(userDetailsService);
-        return new ProviderManager(provider);
+        return new ProviderManager(provider); // Use the DAO authentication provider
     }
-
 }
