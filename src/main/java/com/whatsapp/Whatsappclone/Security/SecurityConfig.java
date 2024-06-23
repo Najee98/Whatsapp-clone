@@ -56,25 +56,6 @@ public class SecurityConfig {
     }
 
     /**
-     * Configures CORS settings for the application.
-     *
-     * @return the configured CorsConfigurationSource
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Allow all origins
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow these HTTP methods
-        configuration.setAllowedHeaders(List.of("*")); // Allow all headers
-        configuration.setExposedHeaders(List.of("Authorization")); // Expose the Authorization header
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Apply this configuration to all endpoints
-
-        return source;
-    }
-
-    /**
      * Configures the password encoder for the application.
      *
      * @return the configured PasswordEncoder
