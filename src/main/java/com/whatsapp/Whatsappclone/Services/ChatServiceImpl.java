@@ -3,6 +3,7 @@ package com.whatsapp.Whatsappclone.Services;
 import com.whatsapp.Whatsappclone.Dto.ChatDetailsDto;
 import com.whatsapp.Whatsappclone.Dto.ChatsIndexDto;
 import com.whatsapp.Whatsappclone.Dto.GroupChatRequest;
+import com.whatsapp.Whatsappclone.Dto.UpdateGroupRequest;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.ChatException;
 import com.whatsapp.Whatsappclone.Exceptions.CustomExceptions.UserException;
 import com.whatsapp.Whatsappclone.Models.AppUser;
@@ -256,6 +257,25 @@ public class ChatServiceImpl implements ChatService {
         response.setUsers(chat.getUsers());
 
         return response;
+    }
+
+    @Override
+    public Chat updateGroup(Integer chatId, UpdateGroupRequest request) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(
+                        () -> new ChatException("Chat with id: " + chatId + " not found.")
+                );
+
+        if (request.getGroupName() == null && request.getGroupImage() != null)
+            chat.setImage(request.getGroupImage());
+        else if (request.getGroupImage() == null && request.getGroupName() != null)
+            chat.setName(request.getGroupName());
+        else if (request.getGroupName() != null && request.getGroupImage() != null) {
+            chat.setName(request.getGroupName());
+            chat.setImage(request.getGroupImage());
+        }
+
+        return chatRepository.save(chat);
     }
 
     /**

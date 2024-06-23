@@ -165,4 +165,12 @@ public class ChatController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PutMapping("/group/update")
+    public ResponseEntity<Chat> updateGroup(
+            @RequestParam Integer chatId,
+            @RequestBody UpdateGroupRequest request
+    ){
+        return new ResponseEntity<>(chatService.updateGroup(chatId, request), HttpStatus.OK);
+    }
+
 }
